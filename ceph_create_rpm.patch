@@ -1,0 +1,101 @@
+diff -Naur ceph-0.61.9/configure.ac ../SOURCES/ceph-0.61.9/configure.ac
+--- ceph-0.61.9/configure.ac	2013-10-17 12:26:29.000000000 +0800
++++ ../SOURCES/ceph-0.61.9/configure.ac	2014-02-19 21:11:50.451378431 +0800
+@@ -302,7 +302,7 @@
+ 	# setup defaults for Debian default-jdk package (without --with-jdk-dir)
+ 	AS_IF([test -z "$with_jdk_dir"], [
+ 		   # This works with Debian's default-jdk package
+-		   dir='/usr/lib/jvm/default-java/'
++		   dir='/usr/lib/jvm/java/'
+ 		   javac_prog=`find $dir -name javac | head -n 1`
+ 		   AS_IF([test -x "$javac_prog"], [
+ 				  EXTRA_JDK_BIN_DIR=`dirname $javac_prog`])
+@@ -336,10 +336,10 @@
+         CLASSPATH=$CLASSPATH:$EXTRA_CLASSPATH_JAR
+         export CLASSPATH
+         AC_MSG_NOTICE([classpath - $CLASSPATH])
+-        AS_IF([test "$have_junit4" = "1"], [
+-		AC_CHECK_CLASS([org.junit.rules.ExternalResource], [], [
+-		AC_MSG_NOTICE(Could not find org.junit.rules.ExternalResource)
+-		have_junit4=0])])
++        #AS_IF([test "$have_junit4" = "1"], [
++	#	AC_CHECK_CLASS([org.junit.rules.ExternalResource], [], [
++	#	AC_MSG_NOTICE(Could not find org.junit.rules.ExternalResource)
++	#	have_junit4=0])])
+ 
+         # Check for jni.h
+ 	CPPFLAGS_save=$CPPFLAGS
+diff -Naur ceph-0.61.9/src/java/Makefile.am ../SOURCES/ceph-0.61.9/src/java/Makefile.am
+--- ceph-0.61.9/src/java/Makefile.am	2013-10-17 12:26:29.000000000 +0800
++++ ../SOURCES/ceph-0.61.9/src/java/Makefile.am	2014-02-19 21:12:59.257377496 +0800
+@@ -64,7 +64,7 @@
+ if HAVE_JUNIT4
+ 
+ JAVA_TEST_CLASSES = $(JAVA_TEST_SRC:test/%.java=%.class)
+-ESCAPED_JAVA_TEST_CLASSES = com/ceph/fs/CephAllTests\$$1.class
++#ESCAPED_JAVA_TEST_CLASSES = com/ceph/fs/CephAllTests\$$1.class
+ 
+ CEPH_TEST_PROXY=test/com/ceph/fs/CephMountTest.class
+ 
+@@ -73,7 +73,7 @@
+ 	$(JAVAC) -source 1.5 -target 1.5 -Xlint:-options test/com/ceph/fs/*.java
+ 
+ libcephfs-test.jar: $(CEPH_TEST_PROXY)
+-	$(JAR) cf $@ $(JAVA_TEST_CLASSES:%=-C test %) $(ESCAPED_JAVA_TEST_CLASSES:%=-C test %)
++	$(JAR) cf $@ $(JAVA_TEST_CLASSES:%=-C test %) 
+ 
+ java_DATA += libcephfs-test.jar
+ 
+diff -Naur ceph-0.61.9/src/java/Makefile.in ../SOURCES/ceph-0.61.9/src/java/Makefile.in
+--- ceph-0.61.9/src/java/Makefile.in	2013-10-17 12:27:16.000000000 +0800
++++ ../SOURCES/ceph-0.61.9/src/java/Makefile.in	2014-02-19 21:13:52.643376770 +0800
+@@ -543,7 +543,7 @@
+ @ENABLE_CEPHFS_JAVA_TRUE@@HAVE_JUNIT4_TRUE@	$(JAVAC) -source 1.5 -target 1.5 -Xlint:-options test/com/ceph/fs/*.java
+ 
+ @ENABLE_CEPHFS_JAVA_TRUE@@HAVE_JUNIT4_TRUE@libcephfs-test.jar: $(CEPH_TEST_PROXY)
+-@ENABLE_CEPHFS_JAVA_TRUE@@HAVE_JUNIT4_TRUE@	$(JAR) cf $@ $(JAVA_TEST_CLASSES:%=-C test %) $(ESCAPED_JAVA_TEST_CLASSES:%=-C test %)
++@ENABLE_CEPHFS_JAVA_TRUE@@HAVE_JUNIT4_TRUE@	$(JAR) cf $@ $(JAVA_TEST_CLASSES:%=-C test %) 
+ 
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
+diff -Naur ceph-0.61.9/src/java/test/com/ceph/fs/CephAllTests.java ../SOURCES/ceph-0.61.9/src/java/test/com/ceph/fs/CephAllTests.java
+--- ceph-0.61.9/src/java/test/com/ceph/fs/CephAllTests.java	2013-10-17 12:26:29.000000000 +0800
++++ ../SOURCES/ceph-0.61.9/src/java/test/com/ceph/fs/CephAllTests.java	2014-02-19 21:15:34.229375390 +0800
+@@ -23,7 +23,7 @@
+ import java.io.IOException;
+ import java.util.UUID;
+ import org.junit.*;
+-import org.junit.rules.ExternalResource;
++//import org.junit.rules.ExternalResource;
+ import org.junit.runners.Suite;
+ import org.junit.runner.RunWith;
+ import static org.junit.Assert.*;
+@@ -42,16 +42,16 @@
+  */
+ public class CephAllTests{
+ 
+-  @Rule
+-  public static ExternalResource testRule = new ExternalResource(){
+-    @Override
+-    protected void before() throws Throwable{
+-      // Add debugging messages or setup code here
+-    };
+-
+-    @Override
+-    protected void after(){
+-      // Add debugging messages or cleanup code here
+-    };
+-  };
++//  @Rule
++//  public static ExternalResource testRule = new ExternalResource(){
++//    @Override
++//    protected void before() throws Throwable{
++//      // Add debugging messages or setup code here
++//    };
++//
++//   @Override
++//    protected void after(){
++//      // Add debugging messages or cleanup code here
++//    };
++ // };
+ }
